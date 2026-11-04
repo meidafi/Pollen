@@ -1,6 +1,6 @@
 # Pollen
 
-A workflow for building a global, pollen-observation-derived wetland database for 0–120 ka BP. Wetland indicators must be calculated from observed pollen and aquatic/wetland-affiliated taxa, not from climate variables, methane inversions, OH assumptions, climate models, or pollen-based climate reconstructions.
+A workflow for building a global, pollen-observation-derived wetland database with no preset time-period limit. Wetland indicators must be calculated from observed pollen and aquatic/wetland-affiliated taxa, not from climate variables, methane inversions, OH assumptions, climate models, or pollen-based climate reconstructions.
 
 ## Data currently in the repository
 
@@ -25,7 +25,7 @@ The inventory includes study ID, site, coordinates, archive type, age bounds, re
 
 ## Selection rules
 
-Keep only studies explicitly marked `reconstruction = N` and with an age interval overlapping 0–120,000 years BP. In BP coordinates, overlap means `oldest_age_bp >= 0` and `youngest_age_bp <= 120000`. Do not discard an otherwise eligible study merely because it extends older than 120 ka; later restrict its individual samples to the 0–120 ka interval. Manually resolve missing or ambiguous ages, reconstruction flags, archive types, and pollen-file URLs before downloading data.
+Exclude studies explicitly marked `reconstruction = Y`, including pollen-based climate reconstructions such as temperature reconstructions. Keep studies marked `reconstruction = N`, regardless of their age range; there is no preset temporal cutoff. Manually review `UNKNOWN` statuses and resolve them against NOAA study records before including a study. Retain age information as metadata and document the source age scale and any conversions, but do not use age to exclude studies.
 
 ## Taxon processing and wetland metric
 
