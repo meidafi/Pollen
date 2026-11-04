@@ -26,11 +26,12 @@ FIELDS = [
     "oldest_age_bp",
     "youngest_age_bp",
     "reconstruction",
+    "selection_status",
     "pollen_file_url",
 ]
 ALIASES = {
     "study_id": {"studyid", "noaastudyid", "studyidentifier", "xmlid"},
-    "site_name": {"sitename", "sitename", "sitename", "site"},
+    "site_name": {"sitename", "site"},
     "latitude": {"latitude", "lat"},
     "longitude": {"longitude", "lon", "long"},
     "archive_type": {"archivetype", "archive", "archiveclass"},
@@ -116,6 +117,15 @@ def reconstruction_flag(study: dict[str, Any]) -> str:
     return "UNKNOWN"
 
 
+def selection_status(flag: str) -> str:
+    """Apply study-selection rules without excluding any age range."""
+    if flag == "Y":
+        return "EXCLUDE_RECONSTRUCTION"
+    if flag == "N":
+        return "INCLUDE"
+    return "REVIEW_UNKNOWN"
+
+
 def pollen_urls(study: dict[str, Any]) -> str:
     found: list[str] = []
     for _, value in walk(study):
@@ -130,7 +140,8 @@ def pollen_urls(study: dict[str, Any]) -> str:
 
 
 def row_for(study: dict[str, Any]) -> dict[str, str]:
-    row = {
+    flag = reconstruction_flag(study)
+    return {
         "study_id": text(first_value(study, ALIASES["study_id"])),
         "site_name": text(first_value(study, ALIASES["site_name"])),
         "latitude": number(first_value(study, ALIASES["latitude"])),
@@ -138,10 +149,10 @@ def row_for(study: dict[str, Any]) -> dict[str, str]:
         "archive_type": text(first_value(study, ALIASES["archive_type"])),
         "oldest_age_bp": number(first_value(study, ALIASES["oldest_age_bp"])),
         "youngest_age_bp": number(first_value(study, ALIASES["youngest_age_bp"])),
-        "reconstruction": reconstruction_flag(study),
+        "reconstruction": flag,
+        "selection_status": selection_status(flag),
         "pollen_file_url": pollen_urls(study),
     }
-    return row
 
 
 def main() -> None:
@@ -171,7 +182,8 @@ def main() -> None:
         writer.writeheader()
         writer.writerows(rows.values())
     print(f"Wrote {len(rows)} studies to {args.output}")
-    print("Review UNKNOWN reconstruction flags and missing age/URL values before analysis.")
+    print("Selection status: INCLUDE for reconstruction=N, EXCLUDE_RECONSTRUCTION for Y, and REVIEW_UNKNOWN otherwise.")
+    print("Age bounds are retained as metadata; no temporal cutoff is applied.")
 
 
 if __name__ == "__main__":

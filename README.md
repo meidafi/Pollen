@@ -21,11 +21,11 @@ This reads JSON files under `data/` and writes `data/study_inventory.csv`. You c
 python3 scripts/build_inventory.py --data-dir data --output data/study_inventory.csv
 ```
 
-The inventory includes study ID, site, coordinates, archive type, age bounds, reconstruction status, and discovered pollen-data URLs. The extractor tolerates common NOAA key-name variations. Verify the generated CSV against the source metadata before analysis: values that cannot be identified confidently are left blank, and reconstruction status is `UNKNOWN` unless the metadata explicitly says otherwise (or the data type clearly says reconstruction). Do not treat unknown status as observational.
+The inventory includes study ID, site, coordinates, archive type, age bounds, reconstruction status, a selection status, and discovered pollen-data URLs. The extractor tolerates common NOAA key-name variations. Verify the generated CSV against the source metadata before analysis: values that cannot be identified confidently are left blank, and reconstruction status is `UNKNOWN` unless the metadata explicitly says otherwise (or the data type clearly says reconstruction). Do not treat unknown status as observational.
 
 ## Selection rules
 
-Exclude studies explicitly marked `reconstruction = Y`, including pollen-based climate reconstructions such as temperature reconstructions. Keep studies marked `reconstruction = N`, regardless of their age range; there is no preset temporal cutoff. Manually review `UNKNOWN` statuses and resolve them against NOAA study records before including a study. Retain age information as metadata and document the source age scale and any conversions, but do not use age to exclude studies.
+The generated `selection_status` column applies these rules: `INCLUDE` for studies explicitly marked `reconstruction = N`; `EXCLUDE_RECONSTRUCTION` for studies marked `reconstruction = Y`; and `REVIEW_UNKNOWN` when status is not known. Manually resolve `REVIEW_UNKNOWN` against NOAA study records before inclusion. Keep included studies regardless of their age range; age bounds are metadata only, and no temporal cutoff is applied.
 
 ## Taxon processing and wetland metric
 
